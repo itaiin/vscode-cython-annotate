@@ -1,0 +1,32 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+        "target": "es2018",
+		"outDir": "out",
+		"lib": [
+			"es6",
+			"es2018",
+            "dom"
+		],
+		"sourceMap": true,
+		"rootDir": "src",
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        // We don't worry about this one:
+        //"noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true
+		/* Additional Checks */
+		// "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
+		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
+		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
+	},
+	"exclude": [
+		"node_modules",
+		".vscode-test"
+	]
+}

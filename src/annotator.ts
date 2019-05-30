@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -34,10 +35,23 @@ class CythonExecutor {
     constructor(condaEnv: string | undefined) {
         this.condaEnv = condaEnv;
     }
+
     run(args: string[]) {
         let cythonCmd;
         if (this.condaEnv) {
-            cythonCmd = `. activate ${this.condaEnv} && cython -a ${args.join(' ')}`;
+            let condaCmd;
+            switch (os.platform()) {
+                case 'darwin': /* falls through */
+                case 'linux':
+                    condaCmd = `. activate ${this.condaEnv}`;
+                    break;
+                case "win32":
+                    condaCmd = `activate ${this.condaEnv}`;
+                    break;
+                default:
+                    throw Error(`Unsupported operating system: ${os.platform()}`);
+            }
+            cythonCmd = `${condaCmd} && cython -a ${args.join(' ')}`;
         } else {
             cythonCmd = `cython -a ${args.join(' ')}`;
         }

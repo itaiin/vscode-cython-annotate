@@ -24,9 +24,13 @@ Use `Cython: Clear annotations` to remove.
 
 ### 0.0.1
 
-Added the very basic functionality.
+* Added the very basic functionality.
 
 ### 0.1.0
 
-Added generated c code in a hover message
-Added annotation colors in the overview ruler
+* Added generated c code in a hover message
+* Added annotation colors in the overview ruler
+
+### 0.1.1
+
+* Added default keyboard bindings

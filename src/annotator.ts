@@ -9,12 +9,23 @@ class Annotation {
     lineNumber: number;
     score: number;
     scoreColorCode: string;
+    generatedCode: string | null;
 
-    constructor(sourcePath: string, lineNumber: number, score: number, scoreColorCode: string) {
+    constructor(sourcePath: string, lineNumber: number,
+                score: number, scoreColorCode: string,
+                generatedCode: string | null) {
         this.sourcePath = sourcePath;
         this.lineNumber = lineNumber;
         this.score = score;
         this.scoreColorCode = scoreColorCode;
+        this.generatedCode = generatedCode;
+    }
+
+    createGeneratedCodeMarkdown(): vscode.MarkdownString | null{
+        if (this.generatedCode === null) {
+            return null;
+        }
+        return new vscode.MarkdownString("```c\n" + this.generatedCode + "\n```");
     }
 }
 
@@ -90,8 +101,12 @@ class AnnotationProvider {
             // Always the last one
             let scoreClass = elemClasses[elemClasses.length - 1];
             let lineScore = this.scoreFromClass(scoreClass);
+            let code = null;
+            if ($(elem).attr('onclick')) {
+                code = $(elem).next('.code').text();
+            }
 
-            result.push(new Annotation(sourcePath, lineNumber, lineScore, colorCodes[lineScore]));
+            result.push(new Annotation(sourcePath, lineNumber, lineScore, colorCodes[lineScore], code));
         });
 
         return result;

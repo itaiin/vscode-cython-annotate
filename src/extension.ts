@@ -5,7 +5,7 @@ import { buildAnnotationProvider, AnnotationProvider, Annotation } from './annot
 class VSAnnotationProvider {
 	context: vscode.ExtensionContext;
 	rawProvider: AnnotationProvider;
-	decorationsState: { [index: string]: [vscode.TextEditorDecorationType, vscode.Range][] } = {};
+	decorationsState: { [index: string]: [vscode.TextEditorDecorationType, vscode.DecorationOptions][] } = {};
 
 	constructor(context: vscode.ExtensionContext) {
 		this.context = context;
@@ -16,15 +16,17 @@ class VSAnnotationProvider {
 		const blueComponent = parseInt(annotation.scoreColorCode.slice(4, 6), 16);
 		const opacity = (1 - (blueComponent / 256.)) / 2;
 		const decorationOptions: vscode.DecorationRenderOptions = {
-			//overviewRulerLane: vscode.OverviewRulerLane.Right,
 			isWholeLine: true,
-			backgroundColor: `rgba(128, 128, 0, ${opacity})`
-			//backgroundColor: `rgba(128, 128, 256, ${opacity})`
+			backgroundColor: `rgba(128, 128, 0, ${opacity})`,
+			overviewRulerLane: vscode.OverviewRulerLane.Right,
+			overviewRulerColor: `rgba(128, 128, 0, ${opacity / 2})`
+
 		};
 		return vscode.window.createTextEditorDecorationType(decorationOptions);
 	}
 
-	saveFileDecorations(sourcePath: string, decorations: [vscode.TextEditorDecorationType, vscode.Range][]) {
+	saveFileDecorations(sourcePath: string,
+						decorations: [vscode.TextEditorDecorationType, vscode.DecorationOptions][]) {
 		this.decorationsState[sourcePath] = decorations;
 	}
 
@@ -32,15 +34,15 @@ class VSAnnotationProvider {
 		const sourcePath = activeEditor.document.fileName;
 		const prevDecorations = this.decorationsState[sourcePath];
 		if (prevDecorations) {
-			for (let [decorations, range] of prevDecorations) {
-				activeEditor.setDecorations(decorations, [range]);
+			for (let [decorations, options] of prevDecorations) {
+				activeEditor.setDecorations(decorations, [options]);
 			}
 		}
 	}
 	clearFileDecorations(sourcePath: string) {
 		const prevDecorations = this.decorationsState[sourcePath];
 		if (prevDecorations) {
-			for (let [decorations, range] of prevDecorations) {
+			for (let [decorations, _] of prevDecorations) {
 				(<vscode.Disposable>decorations).dispose();
 			}
 		}
@@ -108,13 +110,19 @@ class VSAnnotationProvider {
 		// Remove previous decorations
 		this.clearFileDecorations(sourcePath);
 
-		const fileDecorations: [vscode.TextEditorDecorationType, vscode.Range][] = [];
+		const fileDecorations: [vscode.TextEditorDecorationType, vscode.DecorationOptions][] = [];
 		annotations.forEach((annotation) => {
+			const line = activeEditor.document.lineAt(annotation.lineNumber - 1);
 			const decorations = this.createDecorations(annotation);
 			this.context.subscriptions.push(decorations);
-			const range = new vscode.Range(annotation.lineNumber - 1, 0, annotation.lineNumber - 1, 0);
-			fileDecorations.push([decorations, range]);
-			activeEditor.setDecorations(decorations, [range]);
+			const range = new vscode.Range(annotation.lineNumber - 1, 0, annotation.lineNumber - 1, line.text.length);
+			let options: vscode.DecorationOptions = {range: range};
+			const generatedCodeMarkdown = annotation.createGeneratedCodeMarkdown();
+			if (generatedCodeMarkdown !== null) {
+				options['hoverMessage'] = generatedCodeMarkdown;
+			}
+			fileDecorations.push([decorations, options]);
+			activeEditor.setDecorations(decorations, [options]);
 		});
 
 		// Save the decorations so that we can either clear or redo them on editor change

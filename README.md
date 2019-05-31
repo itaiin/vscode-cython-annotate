@@ -1,6 +1,6 @@
 # vscode-cython-annotate
 
-See cython annotation (a.k.a "cython -a") right in vscode!
+See cython annotation (a.k.a "cython -a") right within vscode!
 
 ## Features
 
@@ -13,24 +13,9 @@ Use `Cython: Clear annotations` to remove.
 
 ## Extension Settings
 
-* `cython-annotate.condaEnv`: Name of conda path to run cython within
+* `cython-annotate.condaEnv`: Name of conda environment to run cython within
 
 ## Roadmap
 
 * Cache results
 * Produce/Update annotations automatically
-
-## Release Notes
-
-### 0.0.1
-
-* Added the very basic functionality.
-
-### 0.1.0
-
-* Added generated c code in a hover message
-* Added annotation colors in the overview ruler
-
-### 0.1.1
-
-* Added default keyboard bindings

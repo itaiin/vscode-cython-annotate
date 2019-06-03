@@ -42,4 +42,4 @@ All notable changes to the "vscode-cython-annotate" extension will be documented
 
 ### Added
 
-- `cython-annotate.cppPaths` - globs of of cpp mode source paths (e.g. `**/module/*.pyx`)
+- `cython-annotate.cppPaths` configuration

@@ -14,6 +14,7 @@ Use `Cython: Clear annotations` to remove.
 ## Extension Settings
 
 * `cython-annotate.condaEnv`: Name of conda environment to run cython within
+* `cython-annotate.cppPaths`: An array of globs of cpp mode source paths (e.g. `**/module/*.pyx`)
 
 ## Roadmap
 

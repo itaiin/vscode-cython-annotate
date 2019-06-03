@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ChildProcess from 'child_process';
 import * as cheerio from 'cheerio';
+import * as minimatch from 'minimatch';
 
 class Annotation {
     sourcePath: string;
@@ -22,7 +23,7 @@ class Annotation {
         this.generatedCode = generatedCode;
     }
 
-    createGeneratedCodeMarkdown(): vscode.MarkdownString | null{
+    createGeneratedCodeMarkdown(): vscode.MarkdownString | null {
         if (this.generatedCode === null) {
             return null;
         }
@@ -63,14 +64,21 @@ class CythonExecutor {
 
 class AnnotationProvider {
     cython: CythonExecutor;
+    cppPathMatchers: minimatch.IMinimatch[];
 
-    constructor(cython: CythonExecutor) {
+    constructor(cython: CythonExecutor, cppPaths: string[]) {
         this.cython = cython;
+        this.cppPathMatchers = cppPaths.map(
+            (path) => { return new minimatch.Minimatch(path); });
     }
 
-    executeCythonAnnotate(sourcePath: string): string {
+    executeCythonAnnotate(sourcePath: string, isCpp: boolean): string {
         const environment = 'quiver';
-        this.cython.run(['-a', sourcePath]);
+        let args = ['-a', sourcePath];
+        if (isCpp) {
+            args.unshift('--cplus');
+        }
+        this.cython.run(args);
         const annotationHtmlPath = path.join(
             path.dirname(sourcePath),
             path.basename(sourcePath, path.extname(sourcePath)) + '.html');
@@ -126,15 +134,25 @@ class AnnotationProvider {
         return result;
     }
 
+    isCppPath(path: string): boolean {
+        for (let matcher of this.cppPathMatchers) {
+            if (matcher.match(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     annotate(sourcePath: string): Annotation[] {
-        let annotationsHtmlPath = this.executeCythonAnnotate(sourcePath);
+        let annotationsHtmlPath = this.executeCythonAnnotate(sourcePath, this.isCppPath(sourcePath));
         return this.parseAnnotationsHtml(sourcePath, annotationsHtmlPath);
     }
 }
 
 function buildAnnotationProvider(configuration: vscode.WorkspaceConfiguration): AnnotationProvider {
+    let cppPaths = configuration.get('cppPaths', []);
     const executor = new CythonExecutor(configuration.get('condaEnv'));
-    return new AnnotationProvider(executor);
+    return new AnnotationProvider(executor, cppPaths);
 }
 
 export { AnnotationProvider, Annotation, buildAnnotationProvider };

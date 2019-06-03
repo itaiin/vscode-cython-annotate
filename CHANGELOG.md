@@ -37,3 +37,9 @@ All notable changes to the "vscode-cython-annotate" extension will be documented
 - README.md
 - Running with conda in windows
 - Some proper keywords for extensions
+
+## [0.1.3]
+
+### Added
+
+- `cython-annotate.cppPaths` - globs of of cpp mode source paths (e.g. `**/module/*.pyx`)

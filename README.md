@@ -6,9 +6,7 @@ See cython annotation (a.k.a "cython -a") right within vscode!
 
 This is a very preliminary version as everything is pretty much still WIP.
 
-Currently only color coding is supported.
-
-To show them, use the `Cython: annotate` command while in your editor to show the annotations (and update after editing the file).
+Usage is straightforward - use the `Cython: annotate` command while in your editor to show the annotations (and update after editing the file).
 Use `Cython: Clear annotations` to remove.
 
 ## Extension Settings

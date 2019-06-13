@@ -43,3 +43,12 @@ All notable changes to the "vscode-cython-annotate" extension will be documented
 ### Added
 
 - `cython-annotate.cppPaths` configuration
+
+## [0.1.5]
+
+### Fixed
+
+- Cleaned up code
+- Better error handling and messages
+- Proper handling of configuration change events
+- Fixed README

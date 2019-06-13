@@ -12,6 +12,16 @@ class VSAnnotationProvider {
         this.rawProvider = buildAnnotationProvider(vscode.workspace.getConfiguration("cython-annotate"));
     }
 
+    reloadConfig() {
+        try {
+            // Update provider
+            const newProvider = buildAnnotationProvider(vscode.workspace.getConfiguration("cython-annotate"));
+            this.rawProvider = newProvider;
+        } catch (e) {
+            // Do nothing. Probably an invalid configuration
+        }
+    }
+
     // Create the decoration object for the annotation
     createDecorations(annotation: Annotation) {
         const blueComponent = parseInt(annotation.scoreColorCode.slice(4, 6), 16);
@@ -156,6 +166,9 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('"vscode-cython-annotate" is now active!');
 
     let annotator = new VSAnnotationProvider(context);
+    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => {
+        annotator.reloadConfig();
+    }));
     context.subscriptions.push(vscode.commands.registerCommand('extension.cythonAnnotate', () => {
         annotator.annotate();
     }));

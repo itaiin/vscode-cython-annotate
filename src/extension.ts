@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
-import * as which from 'which';
 import { buildAnnotationProvider, AnnotationProvider, Annotation } from './annotator';
+import * as path from 'path';
+import * as fs from 'fs';
 
 class VSAnnotationProvider {
     context: vscode.ExtensionContext;
@@ -161,6 +162,33 @@ class VSAnnotationProvider {
     }
 }
 
+// Switches between .pyx and corresponding .pxd declaration files
+function switchHeaderSource() {
+    const activeEditor = vscode.window.activeTextEditor;
+    if (activeEditor === undefined) { return; }
+    const filename = activeEditor.document.fileName;
+    const srcExt = path.extname(filename);
+    let dstExt;
+    switch (srcExt) {
+        case '.pyx':
+            dstExt = '.pxd';
+            break;
+        case '.pxd':
+            dstExt = '.pyx';
+            break;
+        default:
+            return;
+    }
+    const dstPath = path.join(path.dirname(filename),
+                              path.basename(filename, srcExt) + dstExt);
+    if (!fs.existsSync(dstPath)) {
+        return;
+    }
+    vscode.workspace.openTextDocument(dstPath).then((document) => {
+        vscode.window.showTextDocument(document);
+    });
+}
+
 // Activation handler
 export function activate(context: vscode.ExtensionContext) {
     console.log('"vscode-cython-annotate" is now active!');
@@ -179,11 +207,10 @@ export function activate(context: vscode.ExtensionContext) {
         annotator.clearAllFilesDecorations();
     }));
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((activeEditor) => {
-        if (!activeEditor) {
-            return;
-        }
+        if (!activeEditor) { return; }
         annotator.setFileDecorations(activeEditor);
     }));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.cythonSwitchDeclarationSource', switchHeaderSource));
 }
 
 // Disactivation handler

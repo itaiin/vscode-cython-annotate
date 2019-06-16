@@ -52,3 +52,9 @@ All notable changes to the "vscode-cython-annotate" extension will be documented
 - Better error handling and messages
 - Proper handling of configuration change events
 - Fixed README
+
+## [0.1.6]
+
+### Added
+
+- Switch between source/declaration files (keybinding: alt+o)

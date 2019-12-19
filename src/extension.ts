@@ -197,20 +197,20 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => {
         annotator.reloadConfig();
     }));
-    context.subscriptions.push(vscode.commands.registerCommand('extension.cythonAnnotate', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('cython-annotate.cythonAnnotate', () => {
         annotator.annotate();
     }));
-    context.subscriptions.push(vscode.commands.registerCommand('extension.cythonClearAnnotations', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('cython-annotate.cythonClearAnnotations', () => {
         annotator.clearCurrentFileDecorations();
     }));
-    context.subscriptions.push(vscode.commands.registerCommand('extension.cythonClearAnnotationsAllFiles', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('cython-annotate.cythonClearAnnotationsAllFiles', () => {
         annotator.clearAllFilesDecorations();
     }));
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((activeEditor) => {
         if (!activeEditor) { return; }
         annotator.setFileDecorations(activeEditor);
     }));
-    context.subscriptions.push(vscode.commands.registerCommand('extension.cythonSwitchDeclarationSource', switchHeaderSource));
+    context.subscriptions.push(vscode.commands.registerCommand('cython-annotate.cythonSwitchDeclarationSource', switchHeaderSource));
 }
 
 // Disactivation handler

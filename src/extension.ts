@@ -110,8 +110,7 @@ class VSAnnotationProvider {
             return this.rawProvider.annotate(sourcePath);
         } catch (e) {
             vscode.window.showErrorMessage(
-                `Got an error while annotating file "${sourcePath}"`,
-                e.stderr.toString());
+                `Got an error while annotating file "${sourcePath}": ${e.stderr.toString()}`);
             return null;
         }
     }

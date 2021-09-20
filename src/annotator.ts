@@ -52,9 +52,9 @@ class CythonExecutor {
                 default:
                     throw Error(`Unsupported operating system: ${os.platform()}`);
             }
-            cythonCmd = `${condaCmd} && cython -a ${args.join(' ')}`;
+            cythonCmd = `${condaCmd} && cython ${args.join(' ')}`;
         } else {
-            cythonCmd = `cython -a ${args.join(' ')}`;
+            cythonCmd = `cython ${args.join(' ')}`;
         }
 
         ChildProcess.execFileSync(

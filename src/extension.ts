@@ -142,6 +142,7 @@ class VSAnnotationProvider {
         this.clearFileDecorations(sourcePath);
 
         const fileDecorations: [vscode.TextEditorDecorationType, vscode.DecorationOptions][] = [];
+        let totalScore = 0;
         annotations.forEach((annotation) => {
             const line = activeEditor.document.lineAt(annotation.lineNumber - 1);
             const decorations = this.createDecorations(annotation);
@@ -154,11 +155,12 @@ class VSAnnotationProvider {
             }
             fileDecorations.push([decorations, options]);
             activeEditor.setDecorations(decorations, [options]);
+            totalScore += annotation.score;
         });
 
         // Save the decorations so that we can either clear or redo them on editor change
         this.saveFileDecorations(sourcePath, fileDecorations);
-        vscode.window.showInformationMessage(`Got ${annotations.length} annotations for ${sourcePath}`);
+        vscode.window.showInformationMessage(`Score: ${totalScore} - Got ${annotations.length} annotations for ${sourcePath}`);
     }
 }
 
